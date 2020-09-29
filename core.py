@@ -1,6 +1,6 @@
 import requests
 import vk_api
-import logging as log
+import s_logger as log
 from vk_api.utils import get_random_id
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from cfg import TOKEN, GID
@@ -20,7 +20,7 @@ def main():
                 if umsg == '':
                     at = event.message['attachments']
                     at = at[0]
-                    #for link in at:
+                    # for link in at:
                     if at['type'] == 'link':
                         link = at['link']
                         umsg = link['url']
