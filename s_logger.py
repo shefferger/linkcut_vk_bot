@@ -15,8 +15,8 @@ def getName():
 
 
 def log(info):
-    print(info)
     timeNow = datetime.now()
+    print('\n[' + str(timeNow) + ']\t' + str(info))
     with open(fileName, 'a') as logFile:
         logFile.write('\n[' + str(timeNow) + ']\t' + str(info))
 
