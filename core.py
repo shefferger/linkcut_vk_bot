@@ -53,9 +53,11 @@ def main():
                 if event.from_group:
                     log.log('its group')
     except vk_api.ApiError as err:
-        log.log('Error occurs: ' + err)
+        log.log('Error occurs: ' + str(err.error))
     except vk_api.ApiHttpError as err:
-        log.log('Error occurs: ' + err)
+        log.log('Error occurs: ' + str(err.values))
+    except vk_api.VkRequestsPoolException as err:
+        log.log('Error occurs: ' + str(err.error))
 
 
 if __name__ == '__main__':
