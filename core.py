@@ -11,42 +11,51 @@ poll = VkBotLongPoll(vk_session, GID)
 
 
 def main():
-    log.log('LinkCut Vk Bot Started')
-    for event in poll.listen():
-        if event.type == VkBotEventType.MESSAGE_NEW and event.message:
-            if event.from_user and (event.message['text'] != '' or event.message['attachments'] != []):
-                uid = event.message['from_id']
-                umsg = str(event.message['text'])
-                if umsg == '':
-                    at = event.message['attachments']
-                    at = at[0]
-                    # for link in at:
-                    if at['type'] == 'link':
-                        link = at['link']
-                        umsg = link['url']
+    log.log('LinkCut Vk Bot Started\n')
+    try:
+        for event in poll.listen():
+            if event.type == VkBotEventType.MESSAGE_NEW and event.message:
+                if event.from_user and (event.message['text'] != '' or event.message['attachments'] != []):
+                    uid = event.message['from_id']
+                    umsg = str(event.message['text'])
+                    if umsg == '':
+                        at = event.message['attachments']
+                        at = at[0]
+                        # for link in at:
+                        if at['type'] == 'link':
+                            link = at['link']
+                            umsg = link['url']
+                        else:
+                            umsg = 'Ошибка'
+                    if umsg.lower() == 'начать':
+                        msg = 'Добро пожаловать! Для сокращения ссылки просто напишите ее сюда :)'
+                    elif umsg.lower() == 'ошибка':
+                        msg = 'Произошла оказия, попробуйте еще раз'
                     else:
-                        umsg = 'Ошибка'
-                if umsg.lower() == 'начать':
-                    msg = 'Добро пожаловать! Для сокращения ссылки просто напишите ее сюда :)'
-                elif umsg.lower() == 'ошибка':
-                    msg = 'Произошла оказия, попробуйте еще раз'
-                else:
-                    payload = {'link_in': umsg, 'userType': 'vkBot'}
-                    response = requests.post('http://www.linkcut.ru', data=payload)
-                    msg = response.text
-                    if response.status_code in (500, 404, 400):
-                        msg = 'Ошибка сервера :('
-
-                log.log('UID: ' + str(uid) + '\tMSG: ' + umsg + '\tRequest: ' + msg)
-                vk.messages.send(
-                    random_id=get_random_id(),
-                    message=msg,
-                    user_id=uid
-                )
-            if event.from_chat:
-                log.log('its chat')
-            if event.from_group:
-                log.log('its group')
+                        payload = {'link_in': umsg, 'userType': 'vkBot'}
+                        try:
+                            response = requests.post('http://www.linkcut.ru', data=payload)
+                            msg = response.text
+                        except requests.exceptions.ConnectionError:
+                            log.log('Connection Error')
+                            msg = 'Временная ошибка сервера, попробуйте чуть позже'
+                        except requests.exceptions.BaseHTTPError:
+                            log.log('HTTP error')
+                            msg = 'Временная ошибка сервера, попробуйте чуть позже'
+                    log.log('UID: ' + str(uid) + '\tMSG: ' + umsg + '\tRequest: ' + msg)
+                    vk.messages.send(
+                        random_id=get_random_id(),
+                        message=msg,
+                        user_id=uid
+                    )
+                if event.from_chat:
+                    log.log('its chat')
+                if event.from_group:
+                    log.log('its group')
+    except vk_api.ApiError as err:
+        log.log('Error occurs: ' + err)
+    except vk_api.ApiHttpError as err:
+        log.log('Error occurs: ' + err)
 
 
 if __name__ == '__main__':
