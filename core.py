@@ -4,6 +4,7 @@ import s_logger as log
 from vk_api.utils import get_random_id
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from cfg import TOKEN, GID
+from time import sleep
 
 vk_session = vk_api.VkApi(token=TOKEN)
 vk = vk_session.get_api()
@@ -60,6 +61,7 @@ def main():
         log.log('Error occurs: ' + str(err.error))
     except requests.exceptions.ReadTimeout as err:
         log.log('Error occurs: ' + str(err.error))
+        sleep(3)
 
 
 if __name__ == '__main__':
