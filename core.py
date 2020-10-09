@@ -58,6 +58,8 @@ def main():
         log.log('Error occurs: ' + str(err.values))
     except vk_api.VkRequestsPoolException as err:
         log.log('Error occurs: ' + str(err.error))
+    except requests.exceptions.ReadTimeout as err:
+        log.log('Error occurs: ' + str(err.error))
 
 
 if __name__ == '__main__':
